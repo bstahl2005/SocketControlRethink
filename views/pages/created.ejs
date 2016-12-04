@@ -1,0 +1,30 @@
+<% include ../partials/header.ejs %>
+
+<div class="jumbotron">
+    <h1>Eine neue Steckdose wurde hinzugefügt!</h1>
+</div>
+
+<table class="table">
+    <tr>
+        <th>Socket-ID:</th>
+        <td><%= socket.id %></td>
+    </tr>
+    <tr>
+        <th>Socketname:</th>
+        <td><%= socket.socketname %></td>
+    </tr>
+    <tr>
+        <th>SocketcodeOn:</th>
+        <td><%= socket.socketcodeon %></td>
+    </tr>
+    <tr>
+        <th>SocketcodeOff:</th>
+        <td><%= socket.socketcodeoff %></td>
+    </tr>
+    <tr>
+        <th>Socket-Location:</th>
+        <td><%= socket.socketlocation %></td>
+    </tr>
+</table>
+
+<% include ../partials/footer.ejs %>

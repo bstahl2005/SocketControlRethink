@@ -1,0 +1,17 @@
+<% include ../partials/header.ejs %>
+
+<div class="jumbotron">
+    <h1>Sie werden weitergeleitet</h1>
+    <p><%= url.url %></p>
+</div>
+
+<script>
+    var url = <%- JSON.stringify(url.url) %>; // setze die Server-Variable
+
+    setTimeout(function () {
+        document.location.href = url;
+    }, 5000);
+
+</script>
+
+<% include ../partials/footer.ejs %>

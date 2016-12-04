@@ -1,0 +1,99 @@
+<% include ../partials/header.ejs %>
+
+<script>
+    $(document).ready(function () {
+        var socket = io.connect("http://localhost:9000/");
+
+        // iterate the concated names
+        <% socket.forEach(function (soc) { %>
+            $('#switchButton<%=soc.name%>').click(function () {
+                var socketId = $('#idEntry<%=soc.id%>').html();
+                var socketName = $('#nameEntry<%= soc.name %>').html();
+                var socketCodeOn = $('#socketCodeOnEntry<%= soc.socketCodeOn %>').html();
+                var socketCodeOff = $('#socketCodeOffEntry<%= soc.socketCodeOff %>').html();
+                var socketLocation = $('#socketLocationEntry<%= soc.socketLocation %>').html();
+                var buttonName = $('#switchButton<%=soc.name%>').html();
+                console.log("SocketId is: " + socketId);
+                console.log("SocketName is: " + socketName);
+                console.log("SocketCodeOn is: " + socketCodeOn);
+                console.log("SocketCodeOff is: " + socketCodeOff);
+                console.log("Location is: " + socketLocation);
+                console.log("buttonName: " + buttonName);
+                var socketStatus;
+
+                if(buttonName == "Anschalten"){
+                    socketStatus = 'An';
+                } else if(buttonName == "Ausschalten"){
+                    socketStatus = 'Aus';
+                }
+                console.log(socketStatus);
+                // send SocketId to Server
+                socket.emit("switchSocket", { // EventName
+                    socId: socketId,
+                    socName: socketName,
+                    socCodeOn: socketCodeOn,
+                    socCodeOff: socketCodeOff,
+                    socLocation: socketLocation,
+                    socStatus: socketStatus
+                });
+                releadWindow();
+            });
+        <% }); %>
+
+    });
+
+
+
+    function releadWindow() {
+        location.reload();
+    }
+</script>
+
+<div class="jumbotron">
+    <h1>Steckdosenübersicht</h1>
+    <p>Alle verfügbaren, angelegten Steckdosen</p>
+</div>
+<% if(socket.length > 0){ %>
+    <% socket.forEach(function (soc) { %>
+        <table class="table table-responsive">
+            <tr>
+                <th>Socket-ID:</th>
+                <td id="idEntry<%= soc.id %>"><%= soc.id %></td>
+            </tr>
+            <tr>
+                <th>Socketname:</th>
+                <td id="nameEntry<%= soc.name %>"><%= soc.name %></td>
+            </tr>
+            <tr>
+                <th>SocketcodeOn:</th>
+                <td id="socketCodeOnEntry<%= soc.socketCodeOn %>"><%= soc.socketCodeOn %></td>
+            </tr>
+            <tr>
+                <th>SocketcodeOff:</th>
+                <td id="socketCodeOffEntry<%= soc.socketCodeOff %>"><%= soc.socketCodeOff %></td>
+            </tr>
+            <tr>
+                <th>Socket-Location:</th>
+                <td id="socketLocationEntry<%= soc.socketLocation %>"><%= soc.socketLocation %></td>
+            </tr>
+            <tr>
+                <th>An- & Ausschalten</th>
+                <td>
+                    <% if(soc.socketStatus == "Aus"){ %>
+                        <button class="btn btn-block btn-primary" id="switchButton<%=soc.name%>">Anschalten</button>
+                    <% } else if(soc.socketStatus == "An"){ %>
+                        <button class="btn btn-block btn-danger" id="switchButton<%=soc.name%>">Ausschalten</button>
+                    <% } %>
+                </td>
+            </tr>
+            <tr>
+                <th>Bearbeiten</th>
+                <td><button class="btn btn-block btn-primary"><%= soc.name %> bearbeiten</button></td>
+            </tr>
+        </table>
+    <% })%>
+<% }else{ %>
+    <h2>Keine Steckdosen angelegt!</h2>
+<% } %>
+
+<% include ../partials/footer.ejs %>
