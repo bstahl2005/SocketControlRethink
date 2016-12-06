@@ -40,7 +40,7 @@ module.exports = {
     insertSocketToDB: function (socket) {
         r.connect({ host: 'localhost', port: 28015 }, function(err, conn) {
             if(err) throw err;
-            r.db('SocketDB').table('sockets').insert({ name: socket.name, socketCodeOn: socket.socketCodeOn, socketCodeOff: socket.socketCodeOff, location: socket.location}).run(conn, function(err, res)
+            r.db('SocketDB').table('sockets').insert({ name: socket.name, socketCodeOn: socket.socketCodeOn, socketCodeOff: socket.socketCodeOff, location: socket.socketLocation, socketStatus: socket.socketStatus}).run(conn, function(err, res)
             {
                 if(err) throw err;
                 console.log(res);

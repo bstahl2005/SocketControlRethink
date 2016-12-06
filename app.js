@@ -34,10 +34,6 @@ app.get('/', function (req, res) {
   res.render("pages/landing");
 });
 
-app.get("/createsocketpage", function (req, res) {
-  res.render("pages/createsocket");
-});
-
 app.get("/socketoverviewpage", function (req, res) {
   // read all from DB
   db.getAllDBContent();
@@ -48,13 +44,62 @@ app.get("/socketoverviewpage", function (req, res) {
           socket: sockets
       });
   }, 500);
+
+    io.on("connection", function (socket) {
+        // console.log("User has connected");
+        // diese Nachricht nimmt der Server entgegen
+        socket.on('switchSocket', function (socketFromClient) {
+            // set socketStatus == "An" or "Off" --> for the gui
+            db.updateSocketStatus(socketFromClient);
+            // switch Socket on
+            socketController.setSocket(socket);
+        });
+    });
+});
+
+app.get("/createsocketpage", function (req, res) {
+    res.render("pages/createsocket");
+    var socket55 = {
+      name: 'Steckdose55'
+    };
+    db.deleteSocketFromDB(socket55);
+
+    io.on("connection", function (socket) {
+        console.log("Create Socket has connected");
+        socket.on('createdSocket', function (socketFromClient) {
+            //console.log(socketFromClient);
+            console.log(socketFromClient.socName);
+            // TODO check exists in database
+            db.getAllDBContent();
+            setTimeout(function () {
+                sockets = db.getResultDB();
+
+                var exists = true;
+                sockets.forEach(function (socking) {
+                    if(socking.name == socketFromClient.socName){
+                        // already exists
+                        console.log("socket exists!");
+                        exists = true;
+                    } else {
+                        exists = false;
+                        // not exists so let's insert
+                        console.log("socket not exists!");
+                        // show
+                    }
+                    // TODO Socket wird immer noch 2 mal eingefügt!!!
+                });
+
+                if(!exists){
+                    db.insertSocketToDB(socketFromClient);
+                }
+
+            }, 300);
+        });
+    });
 });
 
 app.post("/createsocket", function (req, res) {
-  //
-});
-
-app.get("/created", function (req, res) {
+    res.render("pages/created");
 
 
 });
@@ -77,16 +122,7 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
-io.on("connection", function (socket) {
-    // console.log("User has connected");
-    // diese Nachricht nimmt der Server entgegen
-    socket.on('switchSocket', function (socketFromClient) {
-        // set socketStatus == "An" or "Off" --> for the gui
-        db.updateSocketStatus(socketFromClient);
-        // switch Socket on
-        socketController.setSocket(socket);
-    });
-});
+
 
 app.port = 9000;
 server.listen(app.port, function () {
