@@ -7,12 +7,8 @@ var bodyParser = require('body-parser');
 var db = require('./models/rethinkQuery');
 var socketController = require('./logic/socket');
 
-
-
 var sockets;
-
-var index = require('./routes/index');
-var users = require('./routes/users');
+var socEdit;
 
 var app = express();
 var server = require('http').Server(app);
@@ -54,54 +50,78 @@ app.get("/socketoverviewpage", function (req, res) {
             // switch Socket on
             socketController.setSocket(socket);
         });
+        socket.on('deleteSocket', function (socket) {
+            console.log("delete socket called!");
+            db.deleteSocketFromDB(socket);
+        });
+
+
     });
 });
 
 app.get("/createsocketpage", function (req, res) {
     res.render("pages/createsocket");
-    var socket55 = {
-      name: 'Steckdose55'
-    };
-    db.deleteSocketFromDB(socket55);
-
-    io.on("connection", function (socket) {
-        console.log("Create Socket has connected");
-        socket.on('createdSocket', function (socketFromClient) {
-            //console.log(socketFromClient);
-            console.log(socketFromClient.socName);
-            // TODO check exists in database
-            db.getAllDBContent();
-            setTimeout(function () {
-                sockets = db.getResultDB();
-
-                var exists = true;
-                sockets.forEach(function (socking) {
-                    if(socking.name == socketFromClient.socName){
-                        // already exists
-                        console.log("socket exists!");
-                        exists = true;
-                    } else {
-                        exists = false;
-                        // not exists so let's insert
-                        console.log("socket not exists!");
-                        // show
-                    }
-                    // TODO Socket wird immer noch 2 mal eingefügt!!!
-                });
-
-                if(!exists){
-                    db.insertSocketToDB(socketFromClient);
-                }
-
-            }, 300);
-        });
-    });
 });
+
+io.on("connection", function (socket) {
+    console.log("Create Socket has connected");
+    socket.on('createdSocket', function (socketFromClient) {
+        console.log("Socket from client is: " + JSON.stringify(socketFromClient));
+        console.log(socketFromClient.name);
+        // TODO check exists in database
+        db.getAllDBContent();
+        setTimeout(function () {
+            sockets = db.getResultDB();
+            db.insertSocketToDB(socketFromClient);
+            /*
+             var exists = false;
+             sockets.forEach(function (socking) {
+             if(socking.name == socketFromClient.name){
+             // already exists
+             console.log("socket exists!");
+             exists = true;
+             } else {
+             exists = false;
+             // not exists so let's insert
+             console.log("socket not exists!");
+             // show
+             }
+             // TODO Socket wird immer noch 2 mal eingefügt!!!
+             });
+
+             if(!exists){
+
+             }
+             */
+
+        }, 300);
+    });
+
+    socket.on('getSocketEdit', function (socketEdit) {
+        console.log('getSocketEdit called!');
+        socEdit = socketEdit;
+        console.log("Socket for edit: " + JSON.stringify(socEdit));
+    });
+
+    socket.on('changeSocket', function (changedSocket) {
+        console.log('changedSocket called!' + JSON.stringify(changedSocket));
+        // TODO update socket
+        db.updateSocketInDB(changedSocket);
+    });
+
+
+});
+
+
 
 app.post("/createsocket", function (req, res) {
     res.render("pages/created");
+});
 
-
+app.get("/editsocket", function (req, res) {
+        res.render("pages/socketedit", {
+            socket: socEdit
+        });
 });
 
 // catch 404 and forward to error handler

@@ -1,8 +1,9 @@
 <script>
     $(document).ready(function () {
         var socket = io.connect("http://localhost:9000/");
-        $('#createSocketBtn').click(function (){
+        $('#changeSocketBtn').click(function (){
             console.log("createSocketBtn clicked!");
+            var socketid = $('#socketid').val();
             var socketname = $('#socketname').val();
             var socketcodeon = $('#socketcodeon').val();
             var socketcodeoff = $('#socketcodeoff').val();
@@ -13,37 +14,43 @@
             console.log("socketcodeoff from form: " + socketcodeoff);
             console.log("socketlocation from form: " + socketlocation);
 
-            socket.emit("createdSocket", { // EventName
+            socket.emit("changeSocket", { // EventName
+                id: socketid,
                 name: socketname,
                 socketCodeOn: socketcodeon,
                 socketCodeOff: socketcodeoff,
-                socketLocation: socketlocation,
-                socketStatus: 'Aus'
+                socketLocation: socketlocation
             });
         });
     });
 </script>
 
-<form method="post" id="socketForm" action="/createsocket">
+<form method="get" id="socketForm" action="/socketoverviewpage">
+    <div class="form-group">
+        <label for="socketname" class="col-sm-2 control-label">Steckdosen-Id</label>
+        <input type="text" class="form-control" id="socketid" name="socketid" minlength="2" value="<%= socket.id %>" readonly>
+        <span id="infoLabelName"></span>
+    </div>
+
     <div class="form-group">
         <label for="socketname" class="col-sm-2 control-label">Steckdosenname</label>
-        <input type="text" class="form-control" id="socketname" name="socketname" minlength="2" required value="Steckdose55">
+        <input type="text" class="form-control" id="socketname" name="socketname" minlength="2" required value="<%= socket.name %>">
         <span id="infoLabelName"></span>
     </div>
     <div class="form-group">
         <label for="socketcodeon" class="col-sm-2 control-label">Steckdosencode AN</label>
-        <input type="number" class="form-control" id="socketcodeon" name="socketcodeon" minlength="5" required value="50111">
+        <input type="number" class="form-control" id="socketcodeon" name="socketcodeon" minlength="5" required value="<%= socket.socketCodeOn %>">
     </div>
     <div class="form-group">
         <label for="socketcodeoff" class="col-sm-2 control-label">Steckdosencode AUS</label>
-        <input type="number" class="form-control" id="socketcodeoff" name="socketcodeoff" minlength="5" required value="50112">
+        <input type="number" class="form-control" id="socketcodeoff" name="socketcodeoff" minlength="5" required value="<%= socket.socketCodeOff %>">
     </div>
     <div class="form-group">
         <label for="socketlocation" class="col-sm-2 control-label">Steckdosen-Standort</label>
-        <input type="text" class="form-control" id="socketlocation" name="socketlocation" minlength="2" value="Küche">
+        <input type="text" class="form-control" id="socketlocation" name="socketlocation" minlength="2" value="<%=socket.socketLocation%>">
     </div>
     <div class="panel-footer">
-        <input type="submit" class="btn btn-primary" id="createSocketBtn" value="Steckdose anlegen!" />
+        <input type="submit" class="btn btn-primary" id="changeSocketBtn" value="Steckdose ändern!" />
     </div>
 </form>
 <script>

@@ -40,7 +40,7 @@ module.exports = {
     insertSocketToDB: function (socket) {
         r.connect({ host: 'localhost', port: 28015 }, function(err, conn) {
             if(err) throw err;
-            r.db('SocketDB').table('sockets').insert({ name: socket.name, socketCodeOn: socket.socketCodeOn, socketCodeOff: socket.socketCodeOff, location: socket.socketLocation, socketStatus: socket.socketStatus}).run(conn, function(err, res)
+            r.db('SocketDB').table('sockets').insert({ name: socket.name, socketCodeOn: socket.socketCodeOn, socketCodeOff: socket.socketCodeOff, socketLocation: socket.socketLocation, socketStatus: socket.socketStatus}).run(conn, function(err, res)
             {
                 if(err) throw err;
                 console.log(res);
@@ -51,10 +51,9 @@ module.exports = {
     deleteSocketFromDB: function (socket) {
         r.connect({ host: 'localhost', port: 28015 }, function(err, conn) {
             if(err) throw err;
-            r.db('SocketDB').table("sockets").filter({name: socket.name}).delete().run(conn, function (err, res) {
-               if (err) throw err;
-                console.log(res);
-
+            r.db('SocketDB').table("sockets").filter({id: socket.id}).delete().run(conn, function (err, res) {
+               if (err)
+                    console.log(res);
             });
         });
 
@@ -63,13 +62,13 @@ module.exports = {
     updateSocketStatus: function (socket) {
         r.connect({ host: 'localhost', port: 28015 }, function(err, conn) {
             if(err) throw err;
-            if(socket.socStatus == "An"){
-                r.db('SocketDB').table("sockets").filter({id: socket.socId}).update({socketStatus: "An"}).run(conn, function(err, res){
+            if(socket.socketStatus == "An"){
+                r.db('SocketDB').table("sockets").get(socket.id).update({socketStatus: "An"}).run(conn, function(err, res){
                     if (err) throw err;
                     console.log(res);
                 });
-            } else if(socket.socStatus == "Aus"){
-                r.db('SocketDB').table("sockets").filter({id: socket.socId}).update({socketStatus: "Aus"}).run(conn, function(err, res){
+            } else if(socket.socketStatus == "Aus"){
+                r.db('SocketDB').table("sockets").filter({id: socket.id}).update({socketStatus: "Aus"}).run(conn, function(err, res){
                     if (err) throw err;
                     console.log(res);
                 });
@@ -87,10 +86,10 @@ module.exports = {
         });
     },
 
-    testUpdate: function (socket, newName) {
+    updateSocketInDB: function (socket) {
         r.connect({ host: 'localhost', port: 28015 }, function(err, conn) {
             if(err) throw err;
-            r.db('SocketDB').table("sockets").get('8e892d80-f363-4c72-b93b-63827db7eb38').update({name: newName}).run(conn, function(err, res){
+            r.db('SocketDB').table("sockets").filter({id: socket.id}).update({name: socket.name, socketCodeOn: socket.socketCodeOn, socketCodeOff: socket.socketCodeOff, socketLocation: socket.socketLocation}).run(conn, function(err, res){
                 if (err) throw err;
                 console.log(res);
             });

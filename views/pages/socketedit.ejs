@@ -1,21 +1,9 @@
-<form method="POST" action="/editsocket">
-    <div class="form-group">
-        <label for="socketname" class="col-sm-2 control-label">Steckdosenname</label>
-        <input type="text" class="form-control" id="socketname" name="socketname" value="">
-    </div>
-    <div class="form-group">
-        <label for="socketcodeon" class="col-sm-2 control-label">Steckdosencode AN</label>
-        <input type="text" class="form-control" id="socketcodeon" name="socketcodeon">
-    </div>
-    <div class="form-group">
-        <label for="socketcodeoff" class="col-sm-2 control-label">Steckdosencode AUS</label>
-        <input type="text" class="form-control" id="socketcodeoff" name="socketcodeoff">
-    </div>
-    <div class="form-group">
-        <label for="socketlocation" class="col-sm-2 control-label">Steckdosen-Standort</label>
-        <input type="text" class="form-control" id="socketlocation" name="socketlocation">
-    </div>
-    <div class="panel-footer">
-        <input type="submit" class="btn btn-primary" value="Eintragen!" />
-    </div>
-</form>
+<% include ../partials/header.ejs %>
+
+<div class="jumbotron">
+    <h1>Steckdose bearbeiten</h1>
+    <p>Aktuelle Steckdose bearbeiten</p>
+</div>
+<% include landing/form_edit.ejs %>
+
+<% include ../partials/footer.ejs %>

@@ -3,7 +3,6 @@
 <script>
     $(document).ready(function () {
         var socket = io.connect("http://localhost:9000/");
-
         // iterate the concated names
         <% socket.forEach(function (soc) { %>
             $('#switchButton<%=soc.name%>').click(function () {
@@ -29,20 +28,43 @@
                 console.log(socketStatus);
                 // send SocketId to Server
                 socket.emit("switchSocket", { // EventName
-                    socId: socketId,
-                    socName: socketName,
-                    socCodeOn: socketCodeOn,
-                    socCodeOff: socketCodeOff,
-                    socLocation: socketLocation,
-                    socStatus: socketStatus
+                    id: socketId,
+                    name: socketName,
+                    socketCodeOn: socketCodeOn,
+                    socketCodeOff: socketCodeOff,
+                    socketLocation: socketLocation,
+                    socketStatus: socketStatus
                 });
                 releadWindow();
             });
+            $('#deleteButton<%=soc.name%>').click(function () {
+                var socketId = $('#idEntry<%=soc.id%>').html();
+                var socketName = $('#nameEntry<%=soc.name%>').html();
+
+                socket.emit("deleteSocket", {
+                    id: socketId,
+                    name: socketName
+                });
+                releadWindow();
+            });
+
+            $('#btnEdit<%=soc.name%>').click(function () {
+                var socketId = $('#idEntry<%=soc.id%>').html();
+                var socketName = $('#nameEntry<%= soc.name %>').html();
+                var socketCodeOn = $('#socketCodeOnEntry<%= soc.socketCodeOn %>').html();
+                var socketCodeOff = $('#socketCodeOffEntry<%= soc.socketCodeOff %>').html();
+                var socketLocation = $('#socketLocationEntry<%= soc.socketLocation %>').html();
+
+                socket.emit("getSocketEdit", {
+                    id: socketId,
+                    name: socketName,
+                    socketCodeOn: socketCodeOn,
+                    socketCodeOff: socketCodeOff,
+                    socketLocation: socketLocation
+                });
+            });
         <% }); %>
-
     });
-
-
 
     function releadWindow() {
         location.reload();
@@ -80,7 +102,7 @@
                 <th>An- & Ausschalten</th>
                 <td>
                     <% if(soc.socketStatus == "Aus"){ %>
-                        <button class="btn btn-block btn-primary" id="switchButton<%=soc.name%>">Anschalten</button>
+                        <button class="btn btn-block btn-success" id="switchButton<%=soc.name%>">Anschalten</button>
                     <% } else if(soc.socketStatus == "An"){ %>
                         <button class="btn btn-block btn-danger" id="switchButton<%=soc.name%>">Ausschalten</button>
                     <% } %>
@@ -88,7 +110,14 @@
             </tr>
             <tr>
                 <th>Bearbeiten</th>
-                <td><button class="btn btn-block btn-primary"><%= soc.name %> bearbeiten</button></td>
+                <td><form action="/editsocket" method="get">
+                        <button class="btn btn-block btn-primary" id="btnEdit<%=soc.name%>"><%= soc.name %> bearbeiten</button>
+                    </form>
+                </td>
+            </tr>
+            <tr>
+                <th>Löschen</th>
+                <td><button class="btn btn-block btn-danger" id="deleteButton<%=soc.name%>"><%= soc.name %> löschen</button></td>
             </tr>
         </table>
     <% })%>
